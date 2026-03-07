@@ -1,4 +1,4 @@
-package BFS_DFS;
+package BaekJoon.BFS_DFS;
 
 import java.util.ArrayList;
 import java.util.Scanner;
