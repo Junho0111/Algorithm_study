@@ -9,12 +9,11 @@ public class BJ30024 {
     static int K; // 옥수수 몇개 수확 ?
 
     static int[][] map;
+    static PriorityQueue<Corner> cornerQueue;
     static boolean[][] visited;
 
-    static final int[] dx = {-1, 1, 0, 0}; // 위 아 왼 오
+    static final int[] dx = {-1, 1, 0, 0};
     static final int[] dy = {0, 0, -1, 1};
-
-    static ArrayList<Corner> cornerList = new ArrayList<>();
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
@@ -25,12 +24,14 @@ public class BJ30024 {
         map = new int[N + 1][M + 1];
         visited = new boolean[N + 1][M + 1];
 
+        //(앞이 음수 뒤가 양수 -> 음수 - 양수 = (음수이면 오름차순), (양수이면 내림차순))
+        cornerQueue = new PriorityQueue<>((minCorner, maxCorner) -> maxCorner.value - minCorner.value);
+
         for (int n = 1; n <= N; n++) {
             for (int m = 1; m <= M; m++) {
                 map[n][m] = sc.nextInt();
-                //제일 테두리 옥수수들 바로 수확
                 if (n == 1 || n == N || m == 1 || m == M) {
-                    cornerList.add(new Corner(n, m, map[n][m]));
+                    cornerQueue.add(new Corner(n, m, map[n][m]));
                     visited[n][m] = true;
                 }
             }
@@ -38,26 +39,25 @@ public class BJ30024 {
 
         K = sc.nextInt();
 
-        for (int k = 0; k < K; k++) {
-            int max = 0;
-            for (int i = 1; i < cornerList.size(); i++) {
-                if (cornerList.get(i).value > cornerList.get(max).value) {
-                    max = i;
-                }
-            }
+        int k = 0;
+        while (k < K) {
+            bfs();
+            k++;
+        }
+    }
 
-            Corner best = cornerList.remove(max);
-            System.out.println(best.x + " " + best.y);
+    private static void bfs() {
+            Corner max = cornerQueue.poll();
+            System.out.println(max.x + " " + max.y);
 
             for (int i = 0; i < 4; i++) {
-                int nextX = best.x + dx[i];
-                int nextY = best.y + dy[i];
+                int nextX = max.x + dx[i];
+                int nextY = max.y + dy[i];
 
                 if (nextX >= 1 && nextX <= N && nextY >= 1 && nextY <= M && !visited[nextX][nextY]) {
                     visited[nextX][nextY] = true;
-                    cornerList.add(new Corner(nextX, nextY, map[nextX][nextY]));
+                    cornerQueue.add(new Corner(nextX, nextY, map[nextX][nextY]));
                 }
-            }
         }
     }
 
